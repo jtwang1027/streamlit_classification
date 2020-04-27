@@ -1,6 +1,9 @@
 hey,
 
-I just copied the self-driving demo and put it in this container. I also have this skeleton app.py  
+I just copied the self-driving demo and put it in this container. I also have this skeleton app.py
+
+
+change so weights are pre-downloaded with docker app
 
 
 ```
