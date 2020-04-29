@@ -1,3 +1,6 @@
+
+#TODO : new images, more models, evaluation criteria
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -5,14 +8,10 @@ from PIL import Image
 from os import listdir
 from os.path import isfile, join
 
-#eval & plotting
-from sklearn.metrics import confusion_matrix#multilabel_confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-
-#local file
 from imagenet import prediction
+
+from sklearn.metrics import multilabel_confusion_matrix
+
 
 data_path='sample_img'
 
@@ -49,7 +48,7 @@ if imageselect:
     st.image(image, caption=f'File Selected: {imageselect}', use_column_width=True)    
 
 
-if st.sidebar.button('View single prediction'):
+if st.sidebar.button('View Single Prediction'):
     
     label, prob = prediction(imageselect)
     
@@ -58,33 +57,12 @@ if st.sidebar.button('View single prediction'):
     #caption containing prediction
     st.write(f'Class: {label} at Probability: {prob}')
 
-if st.sidebar.button('Complete dataset evaluation'):
+if st.sidebar.button('Comprehensive Evaluation'):
+    st.write(f'Beginning evaluation of loaded dataset...')
     
+    prediction(imageselect)
+    multilabel_confusion_matrix()
 
-    st.write('Generating predictions...')
-    #empty list to store predictions
-    pred_label =[]
-
-    label_true =['lawn_mower','ladjbug', 'guacomole']
-
-    for img in onlyfiles:
-        #collect predictions
-        pred, _ =prediction(img)
-        pred_label.append(pred)
-
-    print(pred_label)
-
-    cm=confusion_matrix(pred_label, label_true)
-    
-    
-    print(cm)
-
-    df_cm= pd.DataFrame(cm,index=range(cm.shape[0]),columns= range(cm.shape[0]))
-    print(df_cm)
-    sns.heatmap(df_cm)
-    st.pyplot()
-
-    
 
 
 
@@ -94,7 +72,7 @@ if st.sidebar.button('Complete dataset evaluation'):
 
 
 #for single file upload
-uploaded_file = st.file_uploader("Choose an image...", type="jpg")
+uploaded_file = st.file_uploader("Choose an image...")#, type="jpg")
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
