@@ -1,6 +1,9 @@
+
+
+
 def prediction(filename):
     '''takes filename, predicts using mobilenet from pytorch
-    and returns tuple (top category, probability)'''
+    and returns tuple (top category, top probability, all probabilities)'''
     import torch
     import json
     model = torch.hub.load('pytorch/vision:v0.5.0', 'mobilenet_v2', pretrained=True)
@@ -22,15 +25,16 @@ def prediction(filename):
     ])
     input_tensor = preprocess(input_image)
     input_batch = input_tensor.unsqueeze(0) # create a mini-batch as expected by the model
+    
     with torch.no_grad():
         output = model(input_batch)
 
     # The output has unnormalized scores. To get probabilities, you can run a softmax on it.
     probab=torch.nn.functional.softmax(output[0], dim=0)
-    idx=sorted(range(len(probab)), key=lambda i: probab[i])[-3:] #top 3 predictions
+    idx=sorted(range(len(probab)), key=lambda i: probab[i])[-1] #top predictions
     
-    most_prob=str(probab[idx[-1]].numpy()) #probability of most likely category
-    print(categ[str(idx[-1])])
+    most_prob=str(probab[idx].numpy()) #probability of most likely category
+    print(categ[str(idx)])
     print(most_prob)
     print('finished')
-    return( (categ[str(idx[-1])][1], most_prob))
+    return( (categ[str(idx)][1], most_prob, probab))
