@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 
 #local file
-from imagenet import prediction
+from imagenet import predict
 
 data_path='sample_img'
 
@@ -31,14 +31,21 @@ st.write("When you're ready, submit a prediction from the sidebar.")
 ### SIDEBAR
 st.sidebar.info("Welcome")
 
-
+model_sel = st.sidebar.selectbox("Select pretrained model",[
+                                            'vgg11',
+                                            'alexnet',
+                                            'resnet18',
+                                            'mobilenet_v2'])
 
 #files listed in pulldown
 onlyfiles = [join(data_path, f) for f in listdir(data_path) if isfile(join(data_path, f))]
 files_no_path = [f for f in listdir(data_path) if isfile(join(data_path, f))]
 
 
+
 st.sidebar.title("Single Image Exploration")
+
+
 imageselect = st.sidebar.selectbox("Pick an image.", onlyfiles)
 
 if imageselect:
@@ -50,7 +57,8 @@ if imageselect:
 
 if st.sidebar.button('View single prediction'):
     
-    label, most_prob, _ = prediction(imageselect)
+    print(model_sel)
+    label, most_prob, _ = predict(imageselect, model_sel)
     
     #show image
     image = Image.open(imageselect)
@@ -64,11 +72,24 @@ st.sidebar.title("Whole dataset Analysis")
 
 eval_button=st.sidebar.button('Complete dataset eval /Re-select ROC feature')
 
-stored_cat=pd.read_csv('categories.csv')
-keep=stored_cat['filename'].isin(files_no_path) #keep only ones in data_path dir
-stored_cat=stored_cat.loc[keep,'real_label'].unique().tolist()
-stored_cat= ['']+ stored_cat #creates empty default option
-feat_sel = st.sidebar.selectbox("Select feature ROC", stored_cat)
+#stored_cat=pd.read_csv('categories.csv')
+#keep=stored_cat['filename'].isin(files_no_path) #keep only ones in data_path dir
+#stored_cat=stored_cat.loc[keep,'real_label'].unique().tolist()
+
+feat_sel = st.sidebar.selectbox("Select feature ROC", 
+        ['',
+        'bucket',
+        'sports_car',
+        'desk',
+        'sewing_machine',
+        'jellyfish',
+        'pay-phone', 
+        'goldfish',
+        'plate',
+        'bathtub',
+        'teddy'
+        ]
+)
 
 if eval_button:
 
@@ -82,6 +103,7 @@ if eval_button:
         my_bar= st.progress(0) #start
         weights_warning = st.warning('start warning')
         
+        print(model_sel)
 
         pred_label =[]
         removef=[] #remove files not compatible with algo
@@ -93,7 +115,7 @@ if eval_button:
             #collect predictions
             
             try:
-                pred, _ ,probab =prediction(img)    
+                pred, _ ,probab =predict(img, model_sel= model_sel)    
                 pred_label.append(pred)                      
             except:
                 #remove files not compatible with algorithm
@@ -164,13 +186,12 @@ if eval_button:
         st.pyplot()
         return None
     
-    
     def ROC(df, feature):
         #input predictions df + desired feature (chosen from dropdown) to get ROC and AUC
 
         #score= roc_auc_score(predictions)
         #testy: 0 or 1
-        #lr_probs: model predicted probabilities
+        #second arg: model predicted probabilities
         nrow, _ =df.shape 
 
         testy= np.zeros(nrow,)
@@ -178,6 +199,8 @@ if eval_button:
         testy[hits]= 1 
         
         lr_fpr, lr_tpr, _ = roc_curve(testy, df[feature])
+        auc_score = roc_auc_score(testy, df[feature])
+
 
         plt.plot([0,1], [0,1], linestyle='--')
         plt.plot(lr_fpr, lr_tpr, marker='.', label='MobileNet')
@@ -185,7 +208,7 @@ if eval_button:
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
         # show the legend
-        plt.title(f'ROC for {feature}')
+        plt.title(f'ROC for {feature}: \n AUC: {auc_score}')
         plt.legend()
         # show the plot
         st.pyplot()

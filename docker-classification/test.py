@@ -1,54 +1,48 @@
-from sklearn.metrics import roc_curve
-from sklearn.metrics import roc_auc_score
 
-import streamlit as st
+
 import pandas as pd
 import numpy as np
-from PIL import Image
-from os import listdir
+
+from os import listdir, rename
 from os.path import isfile, join
 
-#eval & plotting
-from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve
-import seaborn as sns
-import matplotlib.pyplot as plt
 
+'''
+file_read = open("imagenet_class_index.json").read()
+categ = json.loads(file_read)
+categ=pd.DataFrame(categ).T
+categ=categ.set_index(0).to_dict()[1]#dict- code: name
 
-#local file
-from imagenet import prediction
+#read in validation data
+val=pd.read_csv('val_annotations.txt', sep='\t', names=['filename','class_id'], usecols=[0,1])
+val['real_label']=val.apply(lambda row: categ[row['class_id']], axis=1)
+'''
 
-df= pd.read_csv('temp.csv')
+cat= pd.read_csv('categories.csv')
 
-#feat_sel = st.sidebar.selectbox("Plot feature ROC", df['real_label'].unique().tolist() )
+#every category has 50 images in the dataset
+cat.groupby('real_label').count()
 
-def ROC(df, feature):
-    #input predictions df + desired feature (chosen from dropdown) to get ROC and AUC
+#pick 10 categories (500 images)
 
-    #score= roc_auc_score(predictions)
-    #testy: 0 or 1
-    #lr_probs: model predicted probabilities
-    nrow, _ =df.shape 
+chosen= ['bucket',
+        'sports_car',
+        'desk',
+        'sewing_machine',
+        'jellyfish',
+        'pay-phone', 
+        'goldfish',
+        'plate',
+        'bathtub',
+        'teddy'
+        ]
 
-    testy= np.zeros(nrow,)
-    hits=np.where(df['real_label']==feature)[0]
-    testy[hits]= 1 
-    
-    lr_fpr, lr_tpr, _ = roc_curve(testy, df[feature])
+files=cat.loc[cat['real_label'].isin(chosen),'filename']
 
-    plt.plot([0,1], [0,1], linestyle='--')
-    plt.plot(lr_fpr, lr_tpr, marker='.', label='Imagenet')
-    # axis labels
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    # show the legend
-    plt.title(f'ROC for {feature}')
-    plt.legend()
-    # show the plot
-    plt.pyplot()
+old_path= [join('images' ,f) for f in files]
+new_path= [join('sample_img' ,f) for f in files]
 
-    return None 
+#rename(old_path, new_path)
 
-ROC(df, feature=feat_sel)
-
-
-
+for old, new in zip(old_path, new_path):
+    rename(old, new) #relies on relative path
