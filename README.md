@@ -43,6 +43,8 @@ Create a two-node cluster named imagenet-cluster:
 
 `gcloud container clusters create imagenet-cluster --num-nodes=2`
 
+![cluster](https://github.com/Tian372/590-Final-Project/blob/master/pic/cluster.png?raw=true)
+
 Deploy our application: 
 
 `kubectl create deployment imagenet-web --image=gcr.io/${PROJECT_ID}/sl:latest`
@@ -54,6 +56,8 @@ Expose our application to traffic from the internet:
 Scale up our application:
 
 `kubectl scale deployment imagenet-web --replicas=3`
+
+![pods](https://github.com/Tian372/590-Final-Project/blob/master/pic/pods.png?raw=true)
 
 Delete the Service: This deallocates the Cloud Load Balancer created for your Service:
 
