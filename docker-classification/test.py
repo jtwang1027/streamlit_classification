@@ -17,41 +17,38 @@ import matplotlib.pyplot as plt
 #local file
 from imagenet import prediction
 
-data_path='sample_img'
+df= pd.read_csv('temp.csv')
 
-pred_label =[]
-all_prob=[]
+#feat_sel = st.sidebar.selectbox("Plot feature ROC", df['real_label'].unique().tolist() )
 
-#GENERALIZE THIS
-label_true =['lawn_mower','ladjbug', 'guacomole']
+def ROC(df, feature):
+    #input predictions df + desired feature (chosen from dropdown) to get ROC and AUC
 
-tot_cat= list(set(label_true))
-'''
+    #score= roc_auc_score(predictions)
+    #testy: 0 or 1
+    #lr_probs: model predicted probabilities
+    nrow, _ =df.shape 
 
-for img in onlyfiles:
-    #collect predictions
-    pred, prob =prediction(img)
-    pred_label.append(pred)
-    all_prob.append(prob)
-'''
-#fpr, tpr, thresholds = roc_curve(y, probs)
+    testy= np.zeros(nrow,)
+    hits=np.where(df['real_label']==feature)[0]
+    testy[hits]= 1 
+    
+    lr_fpr, lr_tpr, _ = roc_curve(testy, df[feature])
+
+    plt.plot([0,1], [0,1], linestyle='--')
+    plt.plot(lr_fpr, lr_tpr, marker='.', label='Imagenet')
+    # axis labels
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    # show the legend
+    plt.title(f'ROC for {feature}')
+    plt.legend()
+    # show the plot
+    plt.pyplot()
+
+    return None 
+
+ROC(df, feature=feat_sel)
 
 
-testy= [1,1,1,1]
-lr_probs= [0.8, 0.6,0.3,0.2]
 
-# calculate roc curves
-#ns_fpr, ns_tpr, _ = roc_curve(testy, ns_probs)
-lr_fpr, lr_tpr, _ = roc_curve(testy, lr_probs)
-lr_fpr, lr_tpr, _ = roc_curve(lr_probs, lr_probs)
-
-# plot the roc curve for the model
-#plt(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
-plt.plot(lr_fpr, lr_tpr, marker='--', label='Logistic')
-# axis labels
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-# show the legend
-plt.legend()
-# show the plot
-plt.show()

@@ -1,4 +1,4 @@
-
+# add models https://pytorch.org/docs/stable/torchvision/models.html
 
 
 def prediction(filename):
@@ -16,6 +16,13 @@ def prediction(filename):
     # sample execution (requires torchvision)
     from PIL import Image
     from torchvision import transforms
+    #from cv2 import imread
+    '''
+    if len(imread(filename))==2:
+        #if image is grayscale, convert to rgb
+        input_image=input_image.convert('RGB')
+    '''
+
     input_image = Image.open(filename)
     preprocess = transforms.Compose([
         transforms.Resize(256),
@@ -23,6 +30,9 @@ def prediction(filename):
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
+
+
+
     input_tensor = preprocess(input_image)
     input_batch = input_tensor.unsqueeze(0) # create a mini-batch as expected by the model
     

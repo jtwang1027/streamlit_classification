@@ -7,7 +7,7 @@ change so weights are pre-downloaded with docker app
 
 
 ```
-docker run -p 5031:5031 jtwang1027/streamlit_app
+docker run -p 8501:8501 jtwang1027/streamlit_app
 
 sudo docker pull jtwang1027/streamlit_app
 
