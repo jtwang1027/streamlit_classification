@@ -163,15 +163,32 @@ if eval_button:
 
         
         output.to_csv('predictions_output.csv', index=False)
-        print(output.head())
+
+        st.write('Number of images evaluated from each category')
+        img_sum=val.groupby('real_label').count()        
+        img_sum.plot(kind='bar')
+        plt.xticks(rotation=10) #beware of cutoff
+        plt.ylabel('Number of images')
+        plt.title('Distribution of images')
+        st.pyplot()
+
         
         return output        
     
     def cm_plot(predictions):
         #input predictions df to get confusion matrix
         #confusion matrix just needs max prob for each image
+        
+        #convert predictions outside of real_labels to 'other'
+        predictions.loc[~predictions['pred_label'].isin(predictions['real_label']),'pred_label']='other'
 
-        cm=confusion_matrix(predictions['pred_label'], predictions['real_label'])
+        #find list of all cats predicted & real
+        axis_cats= list(predictions.real_label.unique())
+        axis_cats.append('other')
+        
+
+        
+        cm=confusion_matrix(predictions['pred_label'], predictions['real_label'], labels=axis_cats)
         print(cm)
 
         df_cm= pd.DataFrame(cm,index=range(cm.shape[0]),columns= range(cm.shape[0]))
@@ -179,7 +196,7 @@ if eval_button:
         
         #ADD COLORING
         
-        sns.heatmap(df_cm)
+        sns.heatmap(df_cm, vmin=0, xticklabels=axis_cats, yticklabels=axis_cats, annot=True)
         plt.title('Confusion Matrix')
         st.pyplot()
         return None
@@ -194,9 +211,11 @@ if eval_button:
 
         testy= np.zeros(nrow,)
         hits=np.where(df['real_label']==feature)[0]
+        
         testy[hits]= 1 
         
         lr_fpr, lr_tpr, _ = roc_curve(testy, df[feature])
+        print(df.loc[hits,[feature, 'pred_label']])
         auc_score = roc_auc_score(testy, df[feature])
 
 
