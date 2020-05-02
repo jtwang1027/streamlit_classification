@@ -74,4 +74,4 @@ Delete the cluster: This deletes the resources that make up the cluster, such as
 
 
 
-## Load testing using 
+## Load testing using Apache Benchmark
