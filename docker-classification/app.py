@@ -86,7 +86,7 @@ feat_sel = st.sidebar.selectbox("Select feature ROC",
 
 if eval_button:
 
-    @st.cache(suppress_st_warning=True)
+    @st.cache(suppress_st_warning=True,allow_output_mutation=True)
     def complete_eval(onlyfiles):
         #input list of files, returns predictions: contains best category for each img
         #all_prob: entire prob distribution for each img
