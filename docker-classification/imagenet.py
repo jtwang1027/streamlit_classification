@@ -69,15 +69,12 @@ def predict(filename, model_sel):
     print('finished')
     return( (categ[str(idx)][1], most_prob, probab))
 
-'''#testing all models
-model_list=['alexnet', 'resnet18',
-                    'vgg16',
-                   'mobilenet_v2' ]
+#testing all models
+model_list=['alexnet', 'resnet18',  'vgg16',  'mobilenet_v2' ]
 
-for mo in model_list:
+'''for mo in model_list:
     print(mo)
     x,y, _ = predict('/home/jason/590-Final-Project/docker-classification/sample_img/val_3.JPEG',model_sel=None)
 
-    print((x,y))
+    print((x,y))'''
     
-'''

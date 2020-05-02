@@ -63,7 +63,8 @@ if st.sidebar.button('View single prediction'):
     #show image
     image = Image.open(imageselect)
     #caption containing prediction
-    st.write(f'Class: {label} at Probability: {most_prob}')
+    st.write(f'Class: {label}')
+    st.write(f'Probability: {most_prob}')
 
 st.write("") #add newline separator
 st.write("")
@@ -78,16 +79,8 @@ eval_button=st.sidebar.button('Complete dataset eval /Re-select ROC feature')
 
 feat_sel = st.sidebar.selectbox("Select feature ROC", 
         ['',
-        'bucket',
-        'sports_car',
-        'desk',
-        'sewing_machine',
-        'jellyfish',
-        'pay-phone', 
-        'goldfish',
-        'plate',
-        'bathtub',
-        'teddy'
+        'bucket','sports_car', 'desk',
+        'sewing_machine','monarch','chimpanzee', 'stopwatch', 'lampshade'
         ]
 )
 
@@ -97,11 +90,13 @@ if eval_button:
     def complete_eval(onlyfiles):
         #input list of files, returns predictions: contains best category for each img
         #all_prob: entire prob distribution for each img
+        
+        st.write("loading model...")
         st.write('Generating predictions...')
         
         weights_warning , my_bar= None, None
         my_bar= st.progress(0) #start
-        weights_warning = st.warning('start warning')
+        weights_warning = st.warning('...')
         
         print(model_sel)
 
@@ -151,8 +146,10 @@ if eval_button:
         categ=categ.set_index(0).to_dict()[1]#dict- code: name
 
         #read in validation data
-        val=pd.read_csv('val_annotations.txt', sep='\t', names=['filename','class_id'], usecols=[0,1])
-        val['real_label']=val.apply(lambda row: categ[row['class_id']], axis=1)
+        #val=pd.read_csv('val_annotations.txt', sep='\t', names=['filename','class_id'], usecols=[0,1])
+        #val['real_label']=val.apply(lambda row: categ[row['class_id']], axis=1)
+        val=pd.read_csv('validation.csv')
+        
 
         
 
@@ -165,7 +162,8 @@ if eval_button:
         output=predictions.merge(all_prob, left_index=True, right_index=True,how='left')
 
         
-        output.to_csv('temp.csv', index=False)
+        output.to_csv('predictions_output.csv', index=False)
+        print(output.head())
         
         return output        
     
@@ -180,7 +178,7 @@ if eval_button:
         print(df_cm)
         
         #ADD COLORING
-        #add auc score
+        
         sns.heatmap(df_cm)
         plt.title('Confusion Matrix')
         st.pyplot()
@@ -203,7 +201,7 @@ if eval_button:
 
 
         plt.plot([0,1], [0,1], linestyle='--')
-        plt.plot(lr_fpr, lr_tpr, marker='.', label='MobileNet')
+        plt.plot(lr_fpr, lr_tpr, marker='.', label=model_sel)
         # axis labels
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
