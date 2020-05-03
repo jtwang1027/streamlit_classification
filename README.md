@@ -75,3 +75,9 @@ Delete the cluster: This deletes the resources that make up the cluster, such as
 
 
 ## Load testing using Apache Benchmark
+
+We decided to use Apache Benchmark for our load testing. Apache Bench is a command-line application for load testing on HTTP servers.
+
+![cluster](https://github.com/Tian372/590-Final-Project/blob/master/pic/load-test.png?raw=true)
+
+The testing result shows that our server is able to server up to about **850 requests per second**, with **99th percentile of respond time falls at about 175 ms**.
