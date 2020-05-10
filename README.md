@@ -10,6 +10,9 @@ The app was dockerized and can be pulled and run with the code below.
 ```
 docker run -p 8501:8501 jtwang1027/streamlit_imagenet:multimodel
 ```
+App demo on [youtube](https://www.youtube.com/watch?v=5j2EOE3Zo3s)
+
+Screenshots
 <img width="557" alt="shot1-streamlit" src="https://user-images.githubusercontent.com/46359281/80869510-dff6b500-8c6e-11ea-9f48-37670891bc1b.png">
 
 <img width="478" alt="shot2-streamlit" src="https://user-images.githubusercontent.com/46359281/80869519-fb61c000-8c6e-11ea-80fb-94e5c52181b3.png">
